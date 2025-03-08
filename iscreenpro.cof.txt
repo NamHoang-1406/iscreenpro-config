@@ -1,0 +1,44 @@
+# iScreen Pro Full Features Config for Shadowrocket
+# Created by Grok 3 on March 08, 2025
+
+[General]
+bypass-system = true
+dns-server = 8.8.8.8, 1.1.1.1, 8.8.4.4
+skip-proxy = 192.168.0.0/16, 10.0.0.0/8, localhost
+tun-excluded-routes = 192.168.0.0/16, 10.0.0.0/8
+loglevel = notify
+
+[Proxy]
+FreeProxy1 = ss, freeproxy1.example.com, 443, aes-256-gcm, password123
+FreeProxy2 = ss, freeproxy2.example.com, 8388, aes-128-gcm, pass456
+
+[Proxy Group]
+ProxyGroup = select, FreeProxy1, FreeProxy2
+
+[Rule]
+DOMAIN, iscreen.shanhe.com, ProxyGroup
+DOMAIN-SUFFIX, shanhe.com, ProxyGroup
+DOMAIN-KEYWORD, iscreen, ProxyGroup
+DOMAIN-KEYWORD, ads, REJECT
+DOMAIN-SUFFIX, doubleclick.net, REJECT
+DOMAIN-SUFFIX, googleadservices.com, REJECT
+DOMAIN-SUFFIX, analytics.google.com, REJECT
+IP-CIDR, 192.168.0.0/16, DIRECT
+IP-CIDR, 10.0.0.0/8, DIRECT
+DOMAIN-SUFFIX, apple.com, DIRECT
+DOMAIN-SUFFIX, icloud.com, DIRECT
+FINAL, ProxyGroup
+
+[Script]
+http-response ^https?://(ads|tracker)\.shanhe\.com script-path=https://raw.githubusercontent.com/adblock/script/main/adblock.js
+http-request ^https?://(iscreen|themes)\.shanhe\.com script-path=https://example.com/speedup.js
+
+[Host]
+iscreen.shanhe.com = server:8.8.8.8
+
+[URL Rewrite]
+^https?://ads\.shanhe\.com reject
+
+[MITM]
+# Giải mã HTTPS cho iScreen và quảng cáo
+hostname = iscreen.shanhe.com, shanhe.com, ads.shanhe.com
