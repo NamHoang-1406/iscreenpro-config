@@ -1,0 +1,56 @@
+# iScreen Pro Full Features Config for Shadowrocket
+# Created by Grok 3 on March 08, 2025
+
+[General]
+# Cài đặt chung
+bypass-system = true
+dns-server = 8.8.8.8, 1.1.1.1, 8.8.4.4
+skip-proxy = 192.168.0.0/16, 10.0.0.0/8, localhost
+tun-excluded-routes = 192.168.0.0/16, 10.0.0.0/8
+loglevel = notify
+
+[Proxy]
+# Proxy miễn phí giả định (Shadowsocks) - Thay bằng proxy thật
+FreeProxy1 = ss, freeproxy1.example.com, 443, aes-256-gcm, password123
+FreeProxy2 = ss, freeproxy2.example.com, 8388, aes-128-gcm, pass456
+
+[Proxy Group]
+# Nhóm proxy để tự động chọn server nhanh nhất
+ProxyGroup = select, FreeProxy1, FreeProxy2
+
+[Rule]
+# Định tuyến lưu lượng iScreen qua proxy
+DOMAIN, iscreen.shanhe.com, ProxyGroup
+DOMAIN-SUFFIX, shanhe.com, ProxyGroup
+DOMAIN-KEYWORD, iscreen, ProxyGroup
+
+# Chặn quảng cáo và tracker
+DOMAIN-KEYWORD, ads, REJECT
+DOMAIN-SUFFIX, doubleclick.net, REJECT
+DOMAIN-SUFFIX, googleadservices.com, REJECT
+DOMAIN-SUFFIX, analytics.google.com, REJECT
+
+# Bỏ qua lưu lượng nội bộ
+IP-CIDR, 192.168.0.0/16, DIRECT
+IP-CIDR, 10.0.0.0/8, DIRECT
+
+# Các dịch vụ phổ biến khác (tùy chọn)
+DOMAIN-SUFFIX, apple.com, DIRECT
+DOMAIN-SUFFIX, icloud.com, DIRECT
+
+# Tất cả lưu lượng khác qua proxy
+FINAL, ProxyGroup
+
+[Script]
+# Script chặn quảng cáo nâng cao
+http-response ^https?://(ads|tracker)\.shanhe\.com script-path=https://raw.githubusercontent.com/adblock/script/main/adblock.js
+# Script tăng tốc tải widget/themes (giả định)
+http-request ^https?://(iscreen|themes)\.shanhe\.com script-path=https://example.com/speedup.js
+
+[Host]
+# Tùy chỉnh DNS cho iScreen (nếu cần)
+iscreen.shanhe.com = server:8.8.8.8
+
+[URL Rewrite]
+# Chuyển hướng quảng cáo sang void
+^https?://ads\.shanhe\.com reject
